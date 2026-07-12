@@ -1,0 +1,7 @@
+PORT=5000
+MONGO_URI=mongodb://ecosphere_admin:change_this_password@localhost:27017/ecosphere?authSource=admin
+JWT_SECRET_EMPLOYEE=replace_with_long_random_string
+JWT_SECRET_DEPARTMENT=replace_with_a_different_long_random_string
+JWT_EXPIRES_IN=8h
+UPLOAD_DIR=./src/uploads
+TARGET_PER_EMPLOYEE=200
