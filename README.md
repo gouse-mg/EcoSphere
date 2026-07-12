@@ -176,6 +176,7 @@ Reports & Analytics
 - Deployment: Docker, AWS, Azure
 
 #DATA CONNECTION
+'''text
 ERP Transactions
 (Purchases, Fleet, Manufacturing, Expenses)
                 │
@@ -198,4 +199,5 @@ Audits ──► Compliance Issues ──► Governance Score (G)
 
                  ▼
  Executive Dashboard & ESG Reports
+ '''
 
