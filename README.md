@@ -175,3 +175,27 @@ Reports & Analytics
 - Charts: Chart.js / Recharts
 - Deployment: Docker, AWS, Azure
 
+#DATA CONNECTION
+ERP Transactions
+(Purchases, Fleet, Manufacturing, Expenses)
+                │
+                ▼
+        Carbon Transactions
+                │
+                ▼
+      Environmental Score (E)
+
+Employees ──► CSR Activities ──► Social Score (S)
+        │
+        ├──► Sustainability Challenges ──► XP, Badges, Rewards
+        │
+        └──► Policy Acknowledgements
+
+Audits ──► Compliance Issues ──► Governance Score (G)
+
+                 ▼
+        Department ESG Score
+
+                 ▼
+ Executive Dashboard & ESG Reports
+
