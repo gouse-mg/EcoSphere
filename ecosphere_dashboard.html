@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoSphere — ESG dashboard prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1310; --surface:#161C18; --surface-2:#1E2620; --surface-3:#242D26;
+  --border:#2A322B; --border-strong:#38423A;
+  --text:#ECE9E1; --text-mid:#B7BBB2; --text-muted:#7C8279;
+  --env:#6FA287; --env-bg:#1C2822; --env-text:#9FCBAE;
+  --soc:#6F93B8; --soc-bg:#1A2430; --soc-text:#9DBEDD;
+  --gov:#C99A54; --gov-bg:#2A2318; --gov-text:#E0B77E;
+  --xp:#B98CC9; --xp-bg:#241E2A; --xp-text:#D3AEDF;
+  --danger:#C4674F; --danger-bg:#2A1C17; --danger-text:#E2967F;
+  --radius:10px;
+  font-family:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);}
+.disp{font-family:'Space Grotesk',sans-serif;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:216px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;}
+.brand{display:flex;align-items:center;gap:8px;padding:4px 8px 20px;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--env);}
+.brand span{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;letter-spacing:.2px;}
+.navbtn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;border:none;background:transparent;color:var(--text-mid);font-size:13.5px;font-family:inherit;cursor:pointer;text-align:left;width:100%;}
+.navbtn:hover{background:var(--surface-2);color:var(--text);}
+.navbtn.active{background:var(--surface-2);color:var(--text);}
+.navbtn.active .bar{background:var(--env);}
+.bar{width:3px;height:16px;border-radius:2px;background:transparent;margin-right:-4px;}
+.navsec{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:14px 10px 4px;}
+.spacer{flex:1;}
+.wallet{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.wallet .lbl{font-size:11px;color:var(--text-muted);}
+.wallet .val{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;color:var(--xp-text);margin-top:2px;}
+.main{flex:1;padding:26px 34px 60px;max-width:1180px;}
+.topline{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px;}
+.h1{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;margin:0 0 4px;}
+.sub{color:var(--text-muted);font-size:13.5px;margin:0;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:500;}
+.pill.env{background:var(--env-bg);color:var(--env-text);}
+.pill.soc{background:var(--soc-bg);color:var(--soc-text);}
+.pill.gov{background:var(--gov-bg);color:var(--gov-text);}
+.pill.xp{background:var(--xp-bg);color:var(--xp-text);}
+.pill.danger{background:var(--danger-bg);color:var(--danger-text);}
+.pill.neutral{background:var(--surface-2);color:var(--text-mid);}
+.grid{display:grid;gap:14px;}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between;}
+.metric-lbl{font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;}
+.metric-val{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;margin-top:4px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:500;padding:7px 8px;border-bottom:1px solid var(--border);}
+td{padding:9px 8px;border-bottom:1px solid var(--border);color:var(--text-mid);}
+tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-family:'JetBrains Mono',monospace;}
+.barbg{background:var(--surface-3);border-radius:5px;height:6px;overflow:hidden;}
+.barfill{height:100%;border-radius:5px;}
+select,button.btn{font-family:inherit;font-size:12.5px;background:var(--surface-2);color:var(--text);border:1px solid var(--border-strong);border-radius:7px;padding:6px 10px;cursor:pointer;}
+button.btn:hover{background:var(--surface-3);}
+button.btn:disabled{opacity:.4;cursor:not-allowed;}
+button.btn.primary{background:var(--env-bg);color:var(--env-text);border-color:var(--env);}
+button.btn.danger{background:var(--danger-bg);color:var(--danger-text);border-color:var(--danger);}
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+input[type=range]{accent-color:var(--env);width:100%;}
+.toggle{position:relative;width:38px;height:21px;border-radius:20px;background:var(--surface-3);border:1px solid var(--border-strong);cursor:pointer;flex-shrink:0;}
+.toggle .knob{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--text-muted);transition:.15s;}
+.toggle.on{background:var(--env-bg);border-color:var(--env);}
+.toggle.on .knob{left:19px;background:var(--env);}
+.settingrow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.settingrow:last-child{border-bottom:none;}
+.settingrow .lbl{font-size:13px;}
+.settingrow .desc{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.kcol{background:var(--surface-2);border-radius:9px;padding:9px;min-height:60px;}
+.kcol h4{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin:0 0 8px;padding:0 2px;}
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 9px;margin-bottom:7px;font-size:12px;}
+.kcard .t{font-weight:500;margin-bottom:3px;}
+.kcard .m{color:var(--text-muted);font-size:11px;}
+.badgegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.badge{border-radius:9px;padding:12px;text-align:center;border:1px solid var(--border);}
+.badge.locked{opacity:.38;}
+.badge .ic{width:34px;height:34px;border-radius:50%;background:var(--xp-bg);color:var(--xp-text);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:16px;}
+.badge .n{font-size:12.5px;font-weight:500;}
+.badge .r{font-size:10.5px;color:var(--text-muted);margin-top:3px;}
+.rewardcard{display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);border-radius:9px;padding:12px;background:var(--surface-2);}
+.progress-wrap{margin-bottom:10px;}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{width:20px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);font-size:12px;}
+.lb-name{flex:1;font-size:13px;}
+.section-hidden{display:none;}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.flag{color:var(--danger-text);}
+.small-muted{font-size:11.5px;color:var(--text-muted);}
+::-webkit-scrollbar{height:6px;width:6px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><div class="dot"></div><span>EcoSphere</span></div>
+    <div id="nav"></div>
+    <div class="spacer"></div>
+    <div class="wallet">
+      <div class="lbl">Your points balance</div>
+      <div class="val mono" id="walletVal">0 XP</div>
+    </div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+/* ============ HARDCODED DATA — mirrors the ESG requirements data model ============ */
+
+const departments = [
+  {id:'D1', name:'Manufacturing', code:'MFG', head:'R. Iyer', parent:null, employees:210, status:'Active'},
+  {id:'D2', name:'Logistics & Fleet', code:'LOG', head:'S. Menon', parent:null, employees:64, status:'Active'},
+  {id:'D3', name:'Corporate & Admin', code:'CORP', head:'A. Fernandes', parent:null, employees:38, status:'Active'},
+  {id:'D4', name:'Sales & Marketing', code:'SLM', head:'K. Rao', parent:null, employees:52, status:'Active'},
+  {id:'D5', name:'R&D', code:'RND', head:'P. Nair', parent:null, employees:31, status:'Active'},
+];
+
+const categories = [
+  {id:'C1', name:'Tree Plantation', type:'CSR Activity', status:'Active'},
+  {id:'C2', name:'Blood Donation', type:'CSR Activity', status:'Active'},
+  {id:'C3', name:'Skill Volunteering', type:'CSR Activity', status:'Active'},
+  {id:'C4', name:'Energy Saving', type:'Challenge', status:'Active'},
+  {id:'C5', name:'Waste Reduction', type:'Challenge', status:'Active'},
+  {id:'C6', name:'Commute Green', type:'Challenge', status:'Active'},
+];
+
+const emissionFactors = [
+  {id:'EF1', activity:'Grid Electricity', scope:'Scope 2', unit:'kWh', co2ePerUnit:0.71, source:'CEA v18', status:'Active'},
+  {id:'EF2', activity:'Diesel (Fleet)', scope:'Scope 1', unit:'litre', co2ePerUnit:2.68, source:'GHG Protocol', status:'Active'},
+  {id:'EF3', activity:'Air Travel (domestic)', scope:'Scope 3', unit:'km', co2ePerUnit:0.15, source:'DEFRA 2025', status:'Active'},
+  {id:'EF4', activity:'Raw Steel Purchase', scope:'Scope 3', unit:'kg', co2ePerUnit:1.85, source:'Supplier EPD', status:'Active'},
+  {id:'EF5', activity:'Paper Consumption', scope:'Scope 3', unit:'kg', co2ePerUnit:0.94, source:'DEFRA 2025', status:'Draft'},
+];
+
+const products = [
+  {id:'P1', name:'Steel Bracket A200', factor:'Raw Steel Purchase', notes:'High recycled content variant available'},
+  {id:'P2', name:'Alloy Casing C4', factor:'Raw Steel Purchase', notes:'Under redesign for lower footprint'},
+  {id:'P3', name:'Component Kit K9', factor:'Grid Electricity', notes:'Assembly-heavy, energy intensive'},
+];
+
+const environmentalGoals = [
+  {id:'G1', name:'Reduce Scope 1+2 emissions 15%', dept:'Manufacturing', metric:'Total CO2e (tons)', baseline:4200, target:3570, current:3890, due:'2026-12-31'},
+  {id:'G2', name:'Cut fleet diesel use 20%', dept:'Logistics & Fleet', metric:'Litres/month', baseline:18000, target:14400, current:15600, due:'2026-10-31'},
+  {id:'G3', name:'Paperless office initiative', dept:'Corporate & Admin', metric:'kg paper/month', baseline:640, target:200, current:410, due:'2026-09-30'},
+];
+
+const policies = [
+  {id:'PL1', title:'Anti-Bribery & Corruption Policy', category:'Governance', version:'v3.1', effective:'2026-01-10', applicable:'All'},
+  {id:'PL2', title:'Environmental Compliance Policy', category:'Environmental', version:'v2.0', effective:'2026-02-01', applicable:'Manufacturing, Logistics & Fleet'},
+  {id:'PL3', title:'Code of Conduct', category:'Governance', version:'v4.4', effective:'2025-11-15', applicable:'All'},
+  {id:'PL4', title:'Data Privacy & Whistleblower Policy', category:'Governance', version:'v1.6', effective:'2026-03-20', applicable:'All'},
+];
+
+const badgesCatalog = [
+  {id:'B1', name:'First Step', desc:'Complete 1 challenge', rule:{type:'challenges', min:1}, icon:'ti-flag'},
+  {id:'B2', name:'Green Streak', desc:'Complete 5 challenges', rule:{type:'challenges', min:5}, icon:'ti-leaf'},
+  {id:'B3', name:'XP Rookie', desc:'Earn 200 XP', rule:{type:'xp', min:200}, icon:'ti-bolt'},
+  {id:'B4', name:'XP Veteran', desc:'Earn 800 XP', rule:{type:'xp', min:800}, icon:'ti-award'},
+  {id:'B5', name:'Community Champion', desc:'3 approved CSR activities', rule:{type:'csr', min:3}, icon:'ti-heart'},
+  {id:'B6', name:'Policy Pro', desc:'Acknowledge all active policies', rule:{type:'policies', min:4}, icon:'ti-shield-check'},
+];
+
+const rewardsCatalog = [
+  {id:'R1', name:'Reusable Steel Bottle', points:150, stock:24, status:'Active'},
+  {id:'R2', name:'Half-day Off Voucher', points:600, stock:8, status:'Active'},
+  {id:'R3', name:'Plant-a-tree Donation (your name)', points:100, stock:999, status:'Active'},
+  {id:'R4', name:'Cafeteria Meal Voucher', points:80, stock:40, status:'Active'},
+  {id:'R5', name:'Premium Parking Spot (1 month)', points:400, stock:3, status:'Active'},
+];
+
+const carbonTransactions = [
+  {id:'CT1', dept:'Manufacturing', source:'Manufacturing Run #4471', factor:'Grid Electricity', qty:12000, co2e:8520, date:'2026-07-01'},
+  {id:'CT2', dept:'Logistics & Fleet', source:'Fleet Fuel Log #221', factor:'Diesel (Fleet)', qty:1450, co2e:3886, date:'2026-07-03'},
+  {id:'CT3', dept:'Sales & Marketing', source:'Client Visit Travel', factor:'Air Travel (domestic)', qty:2200, co2e:330, date:'2026-07-04'},
+  {id:'CT4', dept:'Manufacturing', source:'Purchase Order #9012', factor:'Raw Steel Purchase', qty:5400, co2e:9990, date:'2026-07-05'},
+  {id:'CT5', dept:'Corporate & Admin', source:'Expense Report #331', factor:'Paper Consumption', qty:120, co2e:113, date:'2026-07-06'},
+  {id:'CT6', dept:'Logistics & Fleet', source:'Fleet Fuel Log #229', factor:'Diesel (Fleet)', qty:980, co2e:2626, date:'2026-07-08'},
+  {id:'CT7', dept:'R&D', source:'Lab Electricity Meter', factor:'Grid Electricity', qty:3100, co2e:2201, date:'2026-07-09'},
+  {id:'CT8', dept:'Manufacturing', source:'Manufacturing Run #4483', factor:'Grid Electricity', qty:9800, co2e:6958, date:'2026-07-11'},
+];
+
+const csrActivities = [
+  {id:'CS1', title:'Riverbank Tree Plantation', category:'Tree Plantation', date:'2026-06-14', dept:'All', status:'Completed'},
+  {id:'CS2', title:'Quarterly Blood Donation Camp', category:'Blood Donation', date:'2026-07-05', dept:'Corporate & Admin', status:'Completed'},
+  {id:'CS3', title:'Weekend Skill Volunteering — Local School', category:'Skill Volunteering', date:'2026-07-18', dept:'All', status:'Active'},
+  {id:'CS4', title:'Coastal Cleanup Drive', category:'Tree Plantation', date:'2026-07-25', dept:'All', status:'Active'},
+  {id:'CS5', title:'Winter Blood Donation Camp', category:'Blood Donation', date:'2026-12-10', dept:'All', status:'Draft'},
+];
+
+let employeeParticipation = [
+  {id:'EP1', employee:'Ananya S.', activity:'Riverbank Tree Plantation', proof:true, approval:'Approved', points:40, date:'2026-06-14'},
+  {id:'EP2', employee:'Rohit K.', activity:'Riverbank Tree Plantation', proof:true, approval:'Approved', points:40, date:'2026-06-14'},
+  {id:'EP3', employee:'Meera J.', activity:'Quarterly Blood Donation Camp', proof:true, approval:'Approved', points:30, date:'2026-07-05'},
+  {id:'EP4', employee:'You', activity:'Quarterly Blood Donation Camp', proof:true, approval:'Approved', points:30, date:'2026-07-05'},
+  {id:'EP5', employee:'Divya P.', activity:'Weekend Skill Volunteering — Local School', proof:false, approval:'Pending', points:35, date:'2026-07-11'},
+  {id:'EP6', employee:'Arjun T.', activity:'Weekend Skill Volunteering — Local School', proof:true, approval:'Pending', points:35, date:'2026-07-11'},
+  {id:'EP7', employee:'You', activity:'Coastal Cleanup Drive', proof:false, approval:'Pending', points:45, date:'2026-07-12'},
+  {id:'EP8', employee:'Kabir N.', activity:'Riverbank Tree Plantation', proof:false, approval:'Rejected', points:0, date:'2026-06-14'},
+];
+
+let challenges = [
+  {id:'CH1', title:'Cut desk energy 10%', category:'Energy Saving', xp:120, difficulty:'Medium', evidence:true, deadline:'2026-07-31', status:'Active'},
+  {id:'CH2', title:'Zero single-use plastic week', category:'Waste Reduction', xp:80, difficulty:'Easy', evidence:false, deadline:'2026-07-20', status:'Active'},
+  {id:'CH3', title:'Bike or transit to work — 10 days', category:'Commute Green', xp:150, difficulty:'Hard', evidence:true, deadline:'2026-08-15', status:'Draft'},
+  {id:'CH4', title:'Digital-only expense reports', category:'Waste Reduction', xp:60, difficulty:'Easy', evidence:false, deadline:'2026-06-30', status:'Under Review'},
+  {id:'CH5', title:'Q2 recycling drive', category:'Waste Reduction', xp:100, difficulty:'Medium', evidence:true, deadline:'2026-06-15', status:'Completed'},
+  {id:'CH6', title:'Carpool challenge (Winter)', category:'Commute Green', xp:90, difficulty:'Medium', evidence:false, deadline:'2026-01-15', status:'Archived'},
+];
+
+let challengeParticipation = [
+  {id:'CP1', challenge:'Cut desk energy 10%', employee:'You', progress:70, proof:false, approval:'In progress', xp:0},
+  {id:'CP2', challenge:'Cut desk energy 10%', employee:'Ananya S.', progress:100, proof:true, approval:'Approved', xp:120},
+  {id:'CP3', challenge:'Zero single-use plastic week', employee:'You', progress:100, proof:true, approval:'Pending', xp:0},
+  {id:'CP4', challenge:'Q2 recycling drive', employee:'You', progress:100, proof:true, approval:'Approved', xp:100},
+  {id:'CP5', challenge:'Q2 recycling drive', employee:'Rohit K.', progress:100, proof:true, approval:'Approved', xp:100},
+  {id:'CP6', challenge:'Digital-only expense reports', employee:'Meera J.', progress:100, proof:false, approval:'Under review', xp:0},
+];
+
+let policyAcknowledgements = [
+  {policy:'Anti-Bribery & Corruption Policy', employee:'You', status:'Acknowledged', date:'2026-01-12'},
+  {policy:'Code of Conduct', employee:'You', status:'Acknowledged', date:'2025-11-18'},
+  {policy:'Environmental Compliance Policy', employee:'You', status:'Pending', date:null},
+  {policy:'Data Privacy & Whistleblower Policy', employee:'You', status:'Pending', date:null},
+];
+
+const audits = [
+  {id:'AU1', name:'Fleet Fuel Compliance Audit', dept:'Logistics & Fleet', auditor:'External — Verite', date:'2026-06-01', status:'Completed'},
+  {id:'AU2', name:'Manufacturing Safety & Emissions Audit', dept:'Manufacturing', auditor:'Internal — A. Fernandes', date:'2026-07-15', status:'Scheduled'},
+  {id:'AU3', name:'Data Privacy Practices Review', dept:'Corporate & Admin', auditor:'External — LexCheck', date:'2026-05-20', status:'Completed'},
+  {id:'AU4', name:'Supplier Code of Conduct Audit', dept:'Manufacturing', auditor:'Internal — R. Iyer', date:'2026-08-01', status:'Scheduled'},
+];
+
+let complianceIssues = [
+  {id:'CI1', audit:'Fleet Fuel Compliance Audit', severity:'High', desc:'Odometer logs incomplete for 3 vehicles', owner:'S. Menon', due:'2026-07-05', status:'Open'},
+  {id:'CI2', audit:'Fleet Fuel Compliance Audit', severity:'Medium', desc:'Fuel receipts missing GST detail', owner:'S. Menon', due:'2026-07-25', status:'Open'},
+  {id:'CI3', audit:'Manufacturing Safety & Emissions Audit', severity:'Low', desc:'Signage for hazardous storage outdated', owner:'R. Iyer', due:'2026-08-10', status:'Open'},
+  {id:'CI4', audit:'Data Privacy Practices Review', severity:'High', desc:'Third-party vendor DPA not signed', owner:'A. Fernandes', due:'2026-06-30', status:'Open'},
+  {id:'CI5', audit:'Data Privacy Practices Review', severity:'Medium', desc:'Access log retention below policy min.', owner:'A. Fernandes', due:'2026-06-01', status:'Resolved'},
+  {id:'CI6', audit:'Supplier Code of Conduct Audit', severity:'Low', desc:'Annual supplier declaration overdue', owner:'R. Iyer', due:'2026-07-15', status:'Open'},
+];
+
+const diversityMetrics = [
+  {label:'Women in workforce', value:34, target:40},
+  {label:'Women in leadership', value:22, target:35},
+  {label:'Persons with disabilities', value:4, target:6},
+  {label:'Under-30 employees', value:41, target:null},
+];
+
+const trainingCompletion = [
+  {course:'Code of Conduct Refresher', dept:'All', completed:312, total:395},
+  {course:'Anti-Harassment Training', dept:'All', completed:388, total:395},
+  {course:'Data Privacy Essentials', dept:'Corporate & Admin', completed:30, total:38},
+  {course:'Fleet Safety Certification', dept:'Logistics & Fleet', completed:58, total:64},
+];
+
+/* ============ APP STATE ============ */
+
+const state = {
+  tab:'overview',
+  weights:{e:40,s:30,g:30},
+  toggles:{autoEmission:true, evidenceRequired:true, badgeAutoAward:true},
+  ciFilter:'All',
+  cpMine: 'all',
+  wallet: 210,
+};
+
+const ME = 'You';
+
+const nav = [
+  {sec:'Overview', items:[{id:'overview', label:'Overview', icon:'ti-layout-dashboard'}]},
+  {sec:'Pillars', items:[
+    {id:'environmental', label:'Environmental', icon:'ti-leaf'},
+    {id:'social', label:'Social', icon:'ti-users'},
+    {id:'governance', label:'Governance', icon:'ti-shield-check'},
+    {id:'gamification', label:'Gamification', icon:'ti-trophy'},
+  ]},
+  {sec:'Admin', items:[{id:'settings', label:'Master data & settings', icon:'ti-settings'}]},
+];
+
+/* ============ SCORE CALC ============ */
+
+function deptScores(){
+  return departments.map(d=>{
+    const seed = d.id.charCodeAt(1);
+    const e = clamp(58 + (seed*13)%35, 40, 96);
+    const s = clamp(50 + (seed*7)%40, 35, 95);
+    const g = clamp(55 + (seed*17)%33, 38, 94);
+    const total = Math.round(e*state.weights.e/100 + s*state.weights.s/100 + g*state.weights.g/100);
+    return {...d, e, s, g, total};
+  });
+}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+
+function overallScore(){
+  const ds = deptScores();
+  const avg = ds.reduce((a,d)=>a+d.total,0)/ds.length;
+  return Math.round(avg);
+}
+
+function myXP(){
+  const csr = employeeParticipation.filter(p=>p.employee===ME && p.approval==='Approved').reduce((a,p)=>a+p.points,0);
+  const chal = challengeParticipation.filter(p=>p.employee===ME && p.approval==='Approved').reduce((a,p)=>a+p.xp,0);
+  return csr+chal;
+}
+function myCompletedChallenges(){ return challengeParticipation.filter(p=>p.employee===ME && p.approval==='Approved').length; }
+function myApprovedCsr(){ return employeeParticipation.filter(p=>p.employee===ME && p.approval==='Approved').length; }
+function myAckPolicies(){ return policyAcknowledgements.filter(p=>p.employee===ME && p.status==='Acknowledged').length; }
+
+function badgeUnlocked(b){
+  if(b.rule.type==='xp') return myXP() >= b.rule.min;
+  if(b.rule.type==='challenges') return myCompletedChallenges() >= b.rule.min;
+  if(b.rule.type==='csr') return myApprovedCsr() >= b.rule.min;
+  if(b.rule.type==='policies') return myAckPolicies() >= b.rule.min;
+  return false;
+}
+
+/* ============ RENDER SHELL ============ */
+
+function iconEl(name){return `<i class="ti ${name}" style="font-size:16px" aria-hidden="true"></i>`;}
+
+function renderNav(){
+  const el = document.getElementById('nav');
+  el.innerHTML = nav.map(sec=>`
+    <div class="navsec">${sec.sec}</div>
+    ${sec.items.map(it=>`
+      <button class="navbtn ${state.tab===it.id?'active':''}" data-tab="${it.id}">
+        <span class="bar"></span>${iconEl(it.icon)}<span>${it.label}</span>
+      </button>`).join('')}
+  `).join('');
+  el.querySelectorAll('.navbtn').forEach(b=>b.addEventListener('click', ()=>{state.tab=b.dataset.tab; renderAll();}));
+}
+
+function renderAll(){
+  renderNav();
+  document.getElementById('walletVal').textContent = myXP()+' XP';
+  const m = document.getElementById('main');
+  if(state.tab==='overview') m.innerHTML = viewOverview();
+  if(state.tab==='environmental') m.innerHTML = viewEnvironmental();
+  if(state.tab==='social') m.innerHTML = viewSocial();
+  if(state.tab==='governance') m.innerHTML = viewGovernance();
+  if(state.tab==='gamification') m.innerHTML = viewGamification();
+  if(state.tab==='settings') m.innerHTML = viewSettings();
+  bindEvents();
+}
+
+/* ============ OVERVIEW ============ */
+
+function esgRingSVG(score){
+  const ds = deptScores();
+  const e = Math.round(ds.reduce((a,d)=>a+d.e,0)/ds.length);
+  const s = Math.round(ds.reduce((a,d)=>a+d.s,0)/ds.length);
+  const g = Math.round(ds.reduce((a,d)=>a+d.g,0)/ds.length);
+  const arc = (pct, r) => {
+    const c = 2*Math.PI*r;
+    return `${(pct/100)*c} ${c}`;
+  };
+  return `
+  <svg width="168" height="168" viewBox="0 0 168 168">
+    <circle cx="84" cy="84" r="72" fill="none" stroke="#242D26" stroke-width="10"/>
+    <circle cx="84" cy="84" r="72" fill="none" stroke="#6FA287" stroke-width="10" stroke-linecap="round"
+      stroke-dasharray="${arc(e,72)}" transform="rotate(-90 84 84)"/>
+    <circle cx="84" cy="84" r="58" fill="none" stroke="#242D26" stroke-width="10"/>
+    <circle cx="84" cy="84" r="58" fill="none" stroke="#6F93B8" stroke-width="10" stroke-linecap="round"
+      stroke-dasharray="${arc(s,58)}" transform="rotate(-90 84 84)"/>
+    <circle cx="84" cy="84" r="44" fill="none" stroke="#242D26" stroke-width="10"/>
+    <circle cx="84" cy="84" r="44" fill="none" stroke="#C99A54" stroke-width="10" stroke-linecap="round"
+      stroke-dasharray="${arc(g,44)}" transform="rotate(-90 84 84)"/>
+    <text x="84" y="80" text-anchor="middle" font-family="Space Grotesk" font-size="30" font-weight="600" fill="#ECE9E1">${score}</text>
+    <text x="84" y="99" text-anchor="middle" font-family="Inter" font-size="10.5" fill="#7C8279">ESG SCORE</text>
+  </svg>`;
+}
+
+function viewOverview(){
+  const score = overallScore();
+  const ds = deptScores().sort((a,b)=>b.total-a.total);
+  const overdue = complianceIssues.filter(c=>c.status==='Open' && new Date(c.due) < new Date('2026-07-12'));
+  const pendingApprovals = employeeParticipation.filter(p=>p.approval==='Pending').length + challengeParticipation.filter(p=>['Pending','Under review'].includes(p.approval)).length;
+  return `
+  <div class="topline">
+    <div><div class="h1">Organization overview</div><p class="sub">Weighted ESG performance across ${departments.length} departments</p></div>
+    <span class="pill neutral">${iconEl('ti-calendar')} Jul 12, 2026</span>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:16px;grid-template-columns:220px 1fr;">
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      ${esgRingSVG(score)}
+      <div style="display:flex;gap:10px;margin-top:10px;font-size:11px;color:var(--text-muted);">
+        <span><span style="color:var(--env)">●</span> E</span>
+        <span><span style="color:var(--soc)">●</span> S</span>
+        <span><span style="color:var(--gov)">●</span> G</span>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="metric-lbl">Score weighting (live)</div>
+        <div id="weightRows"></div>
+      </div>
+      <div class="card">
+        <div class="metric-lbl">Needs attention</div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;">Overdue compliance issues</span>
+            <span class="pill danger">${overdue.length}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;">Approvals pending</span>
+            <span class="pill neutral">${pendingApprovals}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;">Active challenges</span>
+            <span class="pill xp">${challenges.filter(c=>c.status==='Active').length}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Department leaderboard <span class="small-muted">sorted by total ESG score</span></h3>
+    <table>
+      <tr><th>Rank</th><th>Department</th><th class="num">Environmental</th><th class="num">Social</th><th class="num">Governance</th><th class="num">Total</th></tr>
+      ${ds.map((d,i)=>`
+        <tr>
+          <td class="mono">${i+1}</td>
+          <td>${d.name}</td>
+          <td class="num" style="color:var(--env-text)">${d.e}</td>
+          <td class="num" style="color:var(--soc-text)">${d.s}</td>
+          <td class="num" style="color:var(--gov-text)">${d.g}</td>
+          <td class="num mono" style="font-weight:600;">${d.total}</td>
+        </tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Recent activity feed</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${activityFeed().map(a=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span class="pill ${a.tag}">${iconEl(a.icon)}</span>
+          <div style="flex:1;">
+            <div style="font-size:13px;">${a.text}</div>
+            <div class="small-muted">${a.time}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+  `;
+}
+
+function activityFeed(){
+  return [
+    {tag:'danger', icon:'ti-alert-triangle', text:'Compliance issue overdue — "Third-party vendor DPA not signed" (Owner: A. Fernandes)', time:'Flagged today'},
+    {tag:'xp', icon:'ti-award', text:'Badge unlocked — "XP Rookie" awarded automatically', time:'2 hours ago'},
+    {tag:'soc', icon:'ti-heart', text:'CSR participation approved — Meera J. for Quarterly Blood Donation Camp', time:'Yesterday'},
+    {tag:'env', icon:'ti-leaf', text:'Carbon transaction recorded — 6,958 kg CO2e from Manufacturing Run #4483', time:'Yesterday'},
+    {tag:'gov', icon:'ti-file-check', text:'Policy acknowledgement reminder sent — Environmental Compliance Policy', time:'2 days ago'},
+  ];
+}
+
+/* ============ ENVIRONMENTAL ============ */
+
+function viewEnvironmental(){
+  const filterDept = state.envDeptFilter || 'All';
+  const txns = carbonTransactions.filter(t=> filterDept==='All' || t.dept===filterDept);
+  const totalCo2e = carbonTransactions.reduce((a,t)=>a+t.co2e,0);
+  return `
+  <div class="topline">
+    <div><div class="h1">Environmental</div><p class="sub">Carbon accounting, emission factors and sustainability goals</p></div>
+    <span class="pill env">${iconEl('ti-leaf')} Auto emission calc: ${state.toggles.autoEmission?'On':'Off'}</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:16px;">
+    <div class="card"><div class="metric-lbl">Total CO2e logged</div><div class="metric-val mono">${(totalCo2e/1000).toFixed(1)}t</div></div>
+    <div class="card"><div class="metric-lbl">Active emission factors</div><div class="metric-val mono">${emissionFactors.filter(e=>e.status==='Active').length}</div></div>
+    <div class="card"><div class="metric-lbl">Goals on track</div><div class="metric-val mono">${environmentalGoals.filter(g=>progressPct(g)>=60).length}/${environmentalGoals.length}</div></div>
+    <div class="card"><div class="metric-lbl">Transactions logged</div><div class="metric-val mono">${carbonTransactions.length}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Sustainability goals</h3>
+    ${environmentalGoals.map(g=>`
+      <div class="progress-wrap">
+        <div class="progress-top"><span>${g.name} <span class="small-muted">— ${g.dept}</span></span><span class="mono">${progressPct(g)}%</span></div>
+        <div class="barbg"><div class="barfill" style="width:${progressPct(g)}%;background:var(--env)"></div></div>
+      </div>`).join('')}
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Emission factors</h3>
+    <table>
+      <tr><th>Activity</th><th>Scope</th><th>Unit</th><th class="num">CO2e / unit</th><th>Source</th><th>Status</th></tr>
+      ${emissionFactors.map(f=>`
+        <tr><td>${f.activity}</td><td>${f.scope}</td><td>${f.unit}</td><td class="num mono">${f.co2ePerUnit}</td><td>${f.source}</td>
+        <td><span class="pill ${f.status==='Active'?'env':'neutral'}">${f.status}</span></td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Carbon transactions</h3>
+    <div class="filters">
+      <select id="envDeptFilter">
+        <option ${filterDept==='All'?'selected':''} value="All">All departments</option>
+        ${departments.map(d=>`<option ${filterDept===d.name?'selected':''} value="${d.name}">${d.name}</option>`).join('')}
+      </select>
+    </div>
+    <table>
+      <tr><th>Source record</th><th>Department</th><th>Factor</th><th class="num">Qty</th><th class="num">CO2e (kg)</th><th>Date</th></tr>
+      ${txns.map(t=>`<tr><td>${t.source}</td><td>${t.dept}</td><td>${t.factor}</td><td class="num mono">${t.qty}</td><td class="num mono">${t.co2e}</td><td class="mono">${t.date}</td></tr>`).join('')}
+    </table>
+  </div>
+  `;
+}
+function progressPct(g){
+  const pct = Math.round(((g.baseline-g.current)/(g.baseline-g.target))*100);
+  return clamp(pct,0,100);
+}
+
+/* ============ SOCIAL ============ */
+
+function viewSocial(){
+  return `
+  <div class="topline">
+    <div><div class="h1">Social</div><p class="sub">CSR activities, employee participation and diversity metrics</p></div>
+    <span class="pill soc">${iconEl('ti-file-check')} Evidence required: ${state.toggles.evidenceRequired?'On':'Off'}</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:16px;">
+    <div class="card"><div class="metric-lbl">CSR activities</div><div class="metric-val mono">${csrActivities.length}</div></div>
+    <div class="card"><div class="metric-lbl">Approved participations</div><div class="metric-val mono">${employeeParticipation.filter(p=>p.approval==='Approved').length}</div></div>
+    <div class="card"><div class="metric-lbl">Pending approvals</div><div class="metric-val mono">${employeeParticipation.filter(p=>p.approval==='Pending').length}</div></div>
+    <div class="card"><div class="metric-lbl">Points awarded</div><div class="metric-val mono">${employeeParticipation.filter(p=>p.approval==='Approved').reduce((a,p)=>a+p.points,0)}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>CSR activities</h3>
+    <table>
+      <tr><th>Title</th><th>Category</th><th>Department</th><th>Date</th><th>Status</th></tr>
+      ${csrActivities.map(c=>`<tr><td>${c.title}</td><td>${c.category}</td><td>${c.dept}</td><td class="mono">${c.date}</td>
+        <td><span class="pill ${statusPill(c.status)}">${c.status}</span></td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Employee participation <span class="small-muted">approve requires proof when evidence is required</span></h3>
+    <table id="epTable">
+      <tr><th>Employee</th><th>Activity</th><th>Proof</th><th class="num">Points</th><th>Approval</th><th></th></tr>
+      ${employeeParticipation.map(p=>epRow(p)).join('')}
+    </table>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Diversity metrics</h3>
+      ${diversityMetrics.map(m=>`
+        <div class="progress-wrap">
+          <div class="progress-top"><span>${m.label}</span><span class="mono">${m.value}%${m.target?` <span class="small-muted">/ ${m.target}% target</span>`:''}</span></div>
+          <div class="barbg"><div class="barfill" style="width:${m.value}%;background:var(--soc)"></div></div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <h3>Training completion</h3>
+      ${trainingCompletion.map(t=>{
+        const pct = Math.round(t.completed/t.total*100);
+        return `<div class="progress-wrap">
+          <div class="progress-top"><span>${t.course} <span class="small-muted">— ${t.dept}</span></span><span class="mono">${t.completed}/${t.total}</span></div>
+          <div class="barbg"><div class="barfill" style="width:${pct}%;background:var(--soc)"></div></div>
+        </div>`;}).join('')}
+    </div>
+  </div>
+  `;
+}
+function statusPill(s){
+  if(['Completed','Approved','Active','Resolved','Acknowledged'].includes(s)) return 'env';
+  if(['Pending','Draft','Scheduled','In progress','Under review','Under Review'].includes(s)) return 'gov';
+  if(['Rejected','Open'].includes(s)) return 'danger';
+  return 'neutral';
+}
+function epRow(p){
+  const canApprove = p.approval==='Pending';
+  const blocked = state.toggles.evidenceRequired && !p.proof;
+  return `<tr>
+    <td>${p.employee}</td><td>${p.activity}</td>
+    <td>${p.proof? iconEl('ti-check')+' Attached' : iconEl('ti-x')+' Missing'}</td>
+    <td class="num mono">${p.points}</td>
+    <td><span class="pill ${statusPill(p.approval)}">${p.approval}</span></td>
+    <td style="text-align:right;white-space:nowrap;">
+      ${canApprove ? `
+        <button class="btn primary" data-ep-approve="${p.id}" ${blocked?'disabled title="Proof required"':''} style="margin-right:4px;">Approve</button>
+        <button class="btn danger" data-ep-reject="${p.id}">Reject</button>` : ''}
+    </td>
+  </tr>`;
+}
+
+/* ============ GOVERNANCE ============ */
+
+function viewGovernance(){
+  const filtered = state.ciFilter==='All' ? complianceIssues : complianceIssues.filter(c=>c.status===state.ciFilter);
+  const overdueCount = complianceIssues.filter(c=>c.status==='Open' && new Date(c.due) < new Date('2026-07-12')).length;
+  return `
+  <div class="topline">
+    <div><div class="h1">Governance</div><p class="sub">Policies, audits and compliance issue tracking</p></div>
+    <span class="pill ${overdueCount?'danger':'env'}">${iconEl('ti-alert-triangle')} ${overdueCount} overdue issue${overdueCount===1?'':'s'}</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:16px;">
+    <div class="card"><div class="metric-lbl">Active policies</div><div class="metric-val mono">${policies.length}</div></div>
+    <div class="card"><div class="metric-lbl">Acknowledgement rate</div><div class="metric-val mono">${ackRate()}%</div></div>
+    <div class="card"><div class="metric-lbl">Audits this year</div><div class="metric-val mono">${audits.length}</div></div>
+    <div class="card"><div class="metric-lbl">Open issues</div><div class="metric-val mono">${complianceIssues.filter(c=>c.status==='Open').length}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>ESG policies</h3>
+    <table>
+      <tr><th>Title</th><th>Category</th><th>Version</th><th>Effective</th><th>Applies to</th><th>Your status</th><th></th></tr>
+      ${policies.map(p=>{
+        const ack = policyAcknowledgements.find(a=>a.policy===p.title && a.employee===ME);
+        const done = ack && ack.status==='Acknowledged';
+        return `<tr><td>${p.title}</td><td>${p.category}</td><td class="mono">${p.version}</td><td class="mono">${p.effective}</td><td>${p.applicable}</td>
+          <td><span class="pill ${done?'env':'gov'}">${done?'Acknowledged':'Pending'}</span></td>
+          <td style="text-align:right;">${done?'':`<button class="btn primary" data-ack="${p.title}">Acknowledge</button>`}</td></tr>`;
+      }).join('')}
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Audits</h3>
+    <table>
+      <tr><th>Audit</th><th>Department</th><th>Auditor</th><th>Date</th><th>Status</th></tr>
+      ${audits.map(a=>`<tr><td>${a.name}</td><td>${a.dept}</td><td>${a.auditor}</td><td class="mono">${a.date}</td>
+        <td><span class="pill ${statusPill(a.status)}">${a.status}</span></td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Compliance issues <span class="small-muted">owner and due date required on every issue</span></h3>
+    <div class="filters">
+      <select id="ciFilter">
+        ${['All','Open','Resolved'].map(s=>`<option ${state.ciFilter===s?'selected':''} value="${s}">${s}</option>`).join('')}
+      </select>
+    </div>
+    <table>
+      <tr><th>Description</th><th>Severity</th><th>Owner</th><th>Due date</th><th>Status</th><th></th></tr>
+      ${filtered.map(c=>{
+        const overdue = c.status==='Open' && new Date(c.due) < new Date('2026-07-12');
+        return `<tr><td>${c.desc}<div class="small-muted">${c.audit}</div></td>
+          <td><span class="pill ${c.severity==='High'?'danger':c.severity==='Medium'?'gov':'neutral'}">${c.severity}</span></td>
+          <td>${c.owner}</td>
+          <td class="mono ${overdue?'flag':''}">${c.due}${overdue?' '+iconEl('ti-alert-triangle'):''}</td>
+          <td><span class="pill ${statusPill(c.status)}">${c.status}</span></td>
+          <td style="text-align:right;">${c.status==='Open'?`<button class="btn" data-resolve="${c.id}">Mark resolved</button>`:''}</td>
+        </tr>`;
+      }).join('')}
+    </table>
+  </div>
+  `;
+}
+function ackRate(){
+  const total = policies.length;
+  const done = policyAcknowledgements.filter(a=>a.employee===ME && a.status==='Acknowledged').length;
+  return Math.round(done/total*100);
+}
+
+/* ============ GAMIFICATION ============ */
+
+function viewGamification(){
+  const statuses = ['Draft','Active','Under Review','Completed','Archived'];
+  const xp = myXP();
+  const leaders = leaderboardData();
+  return `
+  <div class="topline">
+    <div><div class="h1">Gamification</div><p class="sub">Challenges, badges, rewards and leaderboards</p></div>
+    <span class="pill xp">${iconEl('ti-bolt')} Badge auto-award: ${state.toggles.badgeAutoAward?'On':'Off'}</span>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:16px;">
+    <div class="card"><div class="metric-lbl">Your XP</div><div class="metric-val mono">${xp}</div></div>
+    <div class="card"><div class="metric-lbl">Challenges completed</div><div class="metric-val mono">${myCompletedChallenges()}</div></div>
+    <div class="card"><div class="metric-lbl">Badges unlocked</div><div class="metric-val mono">${badgesCatalog.filter(badgeUnlocked).length}/${badgesCatalog.length}</div></div>
+    <div class="card"><div class="metric-lbl">Reward stock left</div><div class="metric-val mono">${rewardsCatalog.reduce((a,r)=>a+r.stock,0)}</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;overflow-x:auto;">
+    <h3>Challenges <span class="small-muted">Draft → Active → Under Review → Completed, Archived any time</span></h3>
+    <div class="kanban">
+      ${statuses.map(s=>`
+        <div class="kcol">
+          <h4>${s}</h4>
+          ${challenges.filter(c=>c.status===s).map(c=>`
+            <div class="kcard">
+              <div class="t">${c.title}</div>
+              <div class="m">${c.category} · ${c.xp} XP · ${c.difficulty}</div>
+              <div class="m">Due ${c.deadline}${c.evidence?' · proof required':''}</div>
+            </div>`).join('') || '<div class="small-muted" style="padding:4px;">Empty</div>'}
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Your challenge participation</h3>
+    <table>
+      <tr><th>Challenge</th><th class="num">Progress</th><th>Proof</th><th>Approval</th><th class="num">XP</th></tr>
+      ${challengeParticipation.filter(p=>p.employee===ME).map(p=>`
+        <tr><td>${p.challenge}</td><td class="num mono">${p.progress}%</td>
+          <td>${p.proof?iconEl('ti-check'):iconEl('ti-x')}</td>
+          <td><span class="pill ${statusPill(p.approval)}">${p.approval}</span></td>
+          <td class="num mono">${p.xp}</td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Badges</h3>
+    <div class="badgegrid">
+      ${badgesCatalog.map(b=>{
+        const unlocked = badgeUnlocked(b);
+        return `<div class="badge ${unlocked?'':'locked'}">
+          <div class="ic">${iconEl(b.icon)}</div>
+          <div class="n">${b.name}</div>
+          <div class="r">${b.desc}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:16px;">
+    <div class="card">
+      <h3>Rewards catalog <span class="mono small-muted">${xp} XP available</span></h3>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${rewardsCatalog.map(r=>`
+          <div class="rewardcard" style="flex-direction:row;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:13px;">${r.name}</div>
+              <div class="small-muted">${r.points} XP · ${r.stock} in stock</div>
+            </div>
+            <button class="btn ${xp>=r.points && r.stock>0 ? 'primary':''}" data-redeem="${r.id}" ${xp>=r.points && r.stock>0 ? '' : 'disabled'}>Redeem</button>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Leaderboard</h3>
+      ${leaders.map((l,i)=>`
+        <div class="lb-row">
+          <span class="lb-rank">${i+1}</span>
+          <span class="lb-name">${l.name}${l.name===ME?' <span class="small-muted">(you)</span>':''}</span>
+          <span class="mono" style="color:var(--xp-text)">${l.xp} XP</span>
+        </div>`).join('')}
+    </div>
+  </div>
+  `;
+}
+function leaderboardData(){
+  const map = {};
+  employeeParticipation.filter(p=>p.approval==='Approved').forEach(p=>{ map[p.employee]=(map[p.employee]||0)+p.points; });
+  challengeParticipation.filter(p=>p.approval==='Approved').forEach(p=>{ map[p.employee]=(map[p.employee]||0)+p.xp; });
+  return Object.entries(map).map(([name,xp])=>({name,xp})).sort((a,b)=>b.xp-a.xp);
+}
+
+/* ============ SETTINGS / MASTER DATA ============ */
+
+function viewSettings(){
+  return `
+  <div class="topline">
+    <div><div class="h1">Master data & settings</div><p class="sub">Departments, categories and platform configuration</p></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Departments</h3>
+    <table>
+      <tr><th>Name</th><th>Code</th><th>Head</th><th class="num">Employees</th><th>Status</th></tr>
+      ${departments.map(d=>`<tr><td>${d.name}</td><td class="mono">${d.code}</td><td>${d.head}</td><td class="num mono">${d.employees}</td>
+        <td><span class="pill env">${d.status}</span></td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Categories</h3>
+    <table>
+      <tr><th>Name</th><th>Type</th><th>Status</th></tr>
+      ${categories.map(c=>`<tr><td>${c.name}</td><td><span class="pill ${c.type==='CSR Activity'?'soc':'xp'}">${c.type}</span></td>
+        <td><span class="pill env">${c.status}</span></td></tr>`).join('')}
+    </table>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <h3>ESG score weighting</h3>
+    <p class="small-muted" style="margin-top:-6px;">Adjust and see the overview score recalculate live. Should total 100%.</p>
+    <div id="weightSliders"></div>
+  </div>
+
+  <div class="card">
+    <h3>Business rule toggles</h3>
+    <div class="settingrow">
+      <div><div class="lbl">Auto emission calculation</div><div class="desc">Carbon transactions calculated automatically from operational records</div></div>
+      <div class="toggle ${state.toggles.autoEmission?'on':''}" data-toggle="autoEmission"><div class="knob"></div></div>
+    </div>
+    <div class="settingrow">
+      <div><div class="lbl">Evidence requirement</div><div class="desc">CSR / challenge participation cannot be approved without proof attached</div></div>
+      <div class="toggle ${state.toggles.evidenceRequired?'on':''}" data-toggle="evidenceRequired"><div class="knob"></div></div>
+    </div>
+    <div class="settingrow">
+      <div><div class="lbl">Badge auto-award</div><div class="desc">Badges assigned automatically once unlock rule conditions are met</div></div>
+      <div class="toggle ${state.toggles.badgeAutoAward?'on':''}" data-toggle="badgeAutoAward"><div class="knob"></div></div>
+    </div>
+  </div>
+  `;
+}
+
+function weightSliderHTML(compact){
+  const w = state.weights;
+  const row = (key,label,color)=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:${compact?'6px':'10px'};">
+      <span style="width:${compact?'70px':'90px'};font-size:${compact?'12px':'13px'};color:var(--text-mid);">${label}</span>
+      <input type="range" min="0" max="100" step="5" value="${w[key]}" data-weight="${key}">
+      <span class="mono" style="width:34px;text-align:right;font-size:12px;">${w[key]}%</span>
+    </div>`;
+  return row('e','Environmental','var(--env)') + row('s','Social','var(--soc)') + row('g','Governance','var(--gov)') +
+    `<div class="small-muted" style="margin-top:4px;">Total: ${w.e+w.s+w.g}%</div>`;
+}
+
+/* ============ EVENTS ============ */
+
+function bindEvents(){
+  const wr = document.getElementById('weightRows');
+  if(wr) wr.innerHTML = weightSliderHTML(true);
+  const ws = document.getElementById('weightSliders');
+  if(ws) ws.innerHTML = weightSliderHTML(false);
+
+  document.querySelectorAll('[data-weight]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      state.weights[e.target.dataset.weight] = parseInt(e.target.value);
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll('[data-toggle]').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      const key = t.dataset.toggle;
+      state.toggles[key] = !state.toggles[key];
+      renderAll();
+    });
+  });
+
+  const envSel = document.getElementById('envDeptFilter');
+  if(envSel) envSel.addEventListener('change', e=>{ state.envDeptFilter = e.target.value; renderAll(); });
+
+  const ciSel = document.getElementById('ciFilter');
+  if(ciSel) ciSel.addEventListener('change', e=>{ state.ciFilter = e.target.value; renderAll(); });
+
+  document.querySelectorAll('[data-ep-approve]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const p = employeeParticipation.find(x=>x.id===b.dataset.epApprove);
+      if(state.toggles.evidenceRequired && !p.proof) return;
+      p.approval='Approved'; renderAll();
+    });
+  });
+  document.querySelectorAll('[data-ep-reject]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const p = employeeParticipation.find(x=>x.id===b.dataset.epReject);
+      p.approval='Rejected'; p.points=0; renderAll();
+    });
+  });
+
+  document.querySelectorAll('[data-ack]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      let a = policyAcknowledgements.find(x=>x.policy===b.dataset.ack && x.employee===ME);
+      if(a){ a.status='Acknowledged'; a.date='2026-07-12'; }
+      renderAll();
+    });
+  });
+
+  document.querySelectorAll('[data-resolve]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const c = complianceIssues.find(x=>x.id===b.dataset.resolve);
+      c.status='Resolved'; renderAll();
+    });
+  });
+
+  document.querySelectorAll('[data-redeem]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const r = rewardsCatalog.find(x=>x.id===b.dataset.redeem);
+      const xp = myXP();
+      if(xp>=r.points && r.stock>0){
+        r.stock -= 1;
+        employeeParticipation.push({id:'EPX'+Date.now(), employee:ME, activity:'[Redemption] '+r.name, proof:true, approval:'Approved', points:-r.points, date:'2026-07-12'});
+        renderAll();
+      }
+    });
+  });
+}
+
+renderAll();
+</script>
+</body>
+</html>
