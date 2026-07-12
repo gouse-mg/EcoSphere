@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoSphere — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><h2>🌿 EcoSphere</h2><span>Admin Console</span></div>
+    <ul class="nav" id="navList">
+      <li><button data-section="dashboard" class="active">📊 Dashboard</button></li>
+      <li><button data-section="departments">🏢 Departments</button></li>
+      <li><button data-section="employees">👤 Employees</button></li>
+      <li><button data-section="categories">🏷️ Categories</button></li>
+      <li><button data-section="environmental">🌍 Environmental</button></li>
+      <li><button data-section="social">🤝 Social</button></li>
+      <li><button data-section="governance">⚖️ Governance</button></li>
+      <li><button data-section="gamification">🏆 Gamification</button></li>
+      <li><button data-section="reports">📄 Reports</button></li>
+      <li><button data-section="settings">⚙️ Settings</button></li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="who">Admin Console<small>No login required (internal)</small></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="meta" id="topMeta"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="section-dashboard">
+      <div class="grid grid-4 mb-10">
+        <div class="card stat-card"><div class="label">Overall ESG Score</div><div class="value" id="dashOverall">—</div></div>
+        <div class="card stat-card"><div class="label">Departments</div><div class="value" id="dashDeptCount">—</div></div>
+        <div class="card stat-card"><div class="label">Recent CSR Activity</div><div class="value" id="dashCsrCount">—</div></div>
+        <div class="card stat-card"><div class="label">Open Compliance Issues</div><div class="value" id="dashComplianceCount">—</div></div>
+      </div>
+      <div class="card mb-10">
+        <h3>Department Rankings</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Rank</th><th>Department</th><th>Environmental</th><th>Social</th><th>Governance</th><th>Total</th></tr></thead>
+          <tbody id="dashDeptBody"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="grid grid-3">
+        <div class="card"><h3>Recent CSR Submissions</h3><div id="dashCsrList"><div class="empty">Loading…</div></div></div>
+        <div class="card"><h3>Recent Challenge Submissions</h3><div id="dashChallengeList"><div class="empty">Loading…</div></div></div>
+        <div class="card"><h3>Recent Compliance Issues</h3><div id="dashComplianceList"><div class="empty">Loading…</div></div></div>
+      </div>
+    </div>
+
+    <!-- DEPARTMENTS -->
+    <div class="section" id="section-departments">
+      <div class="card">
+        <div class="card-head"><h3>Departments</h3><button class="btn primary" onclick="crud.openCreate('departments')">+ New Department</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Code</th><th>Head</th><th>Employees</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-departments"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEES -->
+    <div class="section" id="section-employees">
+      <div class="card">
+        <div class="card-head"><h3>Employees</h3><button class="btn primary" onclick="crud.openCreate('employees')">+ New Employee</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>XP</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-employees"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="section" id="section-categories">
+      <div class="card">
+        <div class="card-head"><h3>Categories</h3><button class="btn primary" onclick="crud.openCreate('categories')">+ New Category</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Type</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-categories"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ENVIRONMENTAL -->
+    <div class="section" id="section-environmental">
+      <div class="tabs" id="envTabs">
+        <button class="active" data-tab="emissionFactors">Emission Factors</button>
+        <button data-tab="goals">Environmental Goals</button>
+        <button data-tab="carbonTxns">Carbon Transactions</button>
+        <button data-tab="productProfiles">Product Profiles</button>
+      </div>
+      <div class="card tab-panel" id="panel-emissionFactors">
+        <div class="card-head"><h3>Emission Factors</h3><button class="btn primary" onclick="crud.openCreate('emissionFactors')">+ New Factor</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Activity</th><th>Scope</th><th>Unit</th><th>CO2e/Unit</th><th>Source</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-emissionFactors"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-goals">
+        <div class="card-head"><h3>Environmental Goals</h3><button class="btn primary" onclick="crud.openCreate('goals')">+ New Goal</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Department</th><th>Metric</th><th>Baseline</th><th>Current</th><th>Target</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-goals"><tr><td colspan="9" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-carbonTxns">
+        <div class="card-head"><h3>Carbon Transactions (read-only — submitted by departments)</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Department</th><th>Emission Factor</th><th>Quantity</th><th>CO2e Calculated</th><th>Source</th></tr></thead>
+          <tbody id="tbl-carbonTxns"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-productProfiles">
+        <div class="card-head"><h3>Product ESG Profiles</h3><button class="btn primary" onclick="crud.openCreate('productProfiles')">+ New Profile</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Product</th><th>Linked Emission Factor</th><th>Notes</th><th></th></tr></thead>
+          <tbody id="tbl-productProfiles"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="section" id="section-social">
+      <div class="tabs" id="socialTabs">
+        <button class="active" data-tab="csrActivities">CSR Activities</button>
+        <button data-tab="participation">Approval Queue</button>
+        <button data-tab="diversity">Diversity Metrics</button>
+      </div>
+      <div class="card tab-panel" id="panel-csrActivities">
+        <div class="card-head"><h3>CSR Activities</h3><button class="btn primary" onclick="crud.openCreate('csrActivities')">+ New Activity</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Category</th><th>Department</th><th>Date</th><th>Evidence Req.</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-csrActivities"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-participation">
+        <div class="card-head"><h3>CSR Participation Approval Queue</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Employee</th><th>Activity</th><th>Proof</th><th>Status</th><th>Points</th><th></th></tr></thead>
+          <tbody id="tbl-participation"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-diversity">
+        <div class="card-head"><h3>Diversity Metrics</h3><button class="btn primary" onclick="crud.openCreate('diversity')">+ New Metric</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Label</th><th>Value</th><th>Target</th><th></th></tr></thead>
+          <tbody id="tbl-diversity"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- GOVERNANCE -->
+    <div class="section" id="section-governance">
+      <div class="tabs" id="govTabs">
+        <button class="active" data-tab="policies">Policies</button>
+        <button data-tab="acknowledgements">Acknowledgements</button>
+        <button data-tab="audits">Audits</button>
+        <button data-tab="complianceIssues">Compliance Issues</button>
+      </div>
+      <div class="card tab-panel" id="panel-policies">
+        <div class="card-head"><h3>ESG Policies</h3><button class="btn primary" onclick="crud.openCreate('policies')">+ New Policy</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Category</th><th>Version</th><th>Effective</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-policies"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-acknowledgements">
+        <div class="card-head"><h3>Policy Acknowledgements</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Employee</th><th>Policy</th><th>Status</th><th>Acknowledged Date</th></tr></thead>
+          <tbody id="tbl-acknowledgements"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-audits">
+        <div class="card-head"><h3>Audits</h3><button class="btn primary" onclick="crud.openCreate('audits')">+ New Audit</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Department</th><th>Auditor</th><th>Date</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-audits"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-complianceIssues">
+        <div class="card-head"><h3>Compliance Issues</h3><button class="btn primary" onclick="openComplianceForm()">+ New Issue</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Description</th><th>Audit</th><th>Department</th><th>Severity</th><th>Owner</th><th>Due Date</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-complianceIssues"><tr><td colspan="8" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- GAMIFICATION -->
+    <div class="section" id="section-gamification">
+      <div class="tabs" id="gamTabs">
+        <button class="active" data-tab="challenges">Challenges</button>
+        <button data-tab="challengeParticipation">Approval Queue</button>
+        <button data-tab="badges">Badges</button>
+        <button data-tab="rewards">Rewards</button>
+        <button data-tab="leaderboard">Leaderboard</button>
+      </div>
+      <div class="card tab-panel" id="panel-challenges">
+        <div class="card-head"><h3>Challenges</h3><button class="btn primary" onclick="crud.openCreate('challenges')">+ New Challenge</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Category</th><th>XP</th><th>Difficulty</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-challenges"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-challengeParticipation">
+        <div class="card-head"><h3>Challenge Participation Approval Queue</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Employee</th><th>Challenge</th><th>Progress</th><th>Proof</th><th>Status</th><th>XP Awarded</th><th></th></tr></thead>
+          <tbody id="tbl-challengeParticipation"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-badges">
+        <div class="card-head"><h3>Badges</h3><button class="btn primary" onclick="crud.openCreate('badges')">+ New Badge</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Description</th><th>Icon</th><th>Unlock Rule</th><th></th></tr></thead>
+          <tbody id="tbl-badges"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-rewards">
+        <div class="card-head"><h3>Rewards</h3><button class="btn primary" onclick="crud.openCreate('rewards')">+ New Reward</button></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Description</th><th>Points Req.</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tbl-rewards"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card tab-panel hidden" id="panel-leaderboard">
+        <div class="card-head"><h3>Leaderboard</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Rank</th><th>Employee</th><th>Department</th><th>XP</th></tr></thead>
+          <tbody id="tbl-leaderboard"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="section" id="section-reports">
+      <div class="grid grid-4 mb-10">
+        <button class="btn primary" onclick="loadFixedReport('environmental')">Environmental Report</button>
+        <button class="btn primary" onclick="loadFixedReport('social')">Social Report</button>
+        <button class="btn primary" onclick="loadFixedReport('governance')">Governance Report</button>
+        <button class="btn primary" onclick="loadFixedReport('esg-summary')">ESG Summary</button>
+      </div>
+      <div class="card mb-10">
+        <h3>Custom Report Builder</h3>
+        <div class="form-grid">
+          <div><label>Department ID (optional)</label><input type="text" id="crDept"></div>
+          <div><label>Module (optional)</label><input type="text" id="crModule" placeholder="environmental / social / governance"></div>
+          <div><label>Employee ID (optional)</label><input type="text" id="crEmployee"></div>
+          <div><label>Challenge ID (optional)</label><input type="text" id="crChallenge"></div>
+          <div><label>ESG Category (optional)</label><input type="text" id="crCategory"></div>
+          <div><label>Date Range (optional, e.g. 2026-01-01:2026-06-30)</label><input type="text" id="crDateRange"></div>
+        </div>
+        <div class="actions-row">
+          <button class="btn primary" onclick="runCustomReport()">Run Report</button>
+          <button class="btn" onclick="exportReport('pdf')">Export PDF</button>
+          <button class="btn" onclick="exportReport('excel')">Export Excel</button>
+          <button class="btn" onclick="exportReport('csv')">Export CSV</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Report Output</h3>
+        <pre id="reportOutput" style="white-space:pre-wrap;font-size:12px;color:var(--muted);max-height:420px;overflow:auto;">Choose a report above to view results.</pre>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="section" id="section-settings">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>ESG Weights</h3>
+          <div class="form-grid one">
+            <div><label>Environmental Weight (%)</label><input type="number" id="wEnv"></div>
+            <div><label>Social Weight (%)</label><input type="number" id="wSoc"></div>
+            <div><label>Governance Weight (%)</label><input type="number" id="wGov"></div>
+            <div><label>Target Points/XP per Employee</label><input type="number" id="wTarget"></div>
+          </div>
+          <div class="toggle-row"><span>Auto Emission Calculation</span><label class="switch"><input type="checkbox" id="tAuto"><span class="slider"></span></label></div>
+          <div class="toggle-row"><span>Evidence Required for CSR</span><label class="switch"><input type="checkbox" id="tEvidence"><span class="slider"></span></label></div>
+          <div class="toggle-row"><span>Badge Auto-Award</span><label class="switch"><input type="checkbox" id="tBadge"><span class="slider"></span></label></div>
+          <div class="actions-row" style="margin-top:14px;"><button class="btn primary" onclick="saveConfig()">Save Configuration</button></div>
+        </div>
+        <div class="card">
+          <h3>Notification Settings</h3>
+          <div class="toggle-row"><span>New Compliance Issue</span><label class="switch"><input type="checkbox" id="nCompliance"><span class="slider"></span></label></div>
+          <div class="toggle-row"><span>Approval Decisions</span><label class="switch"><input type="checkbox" id="nApproval"><span class="slider"></span></label></div>
+          <div class="toggle-row"><span>Policy Reminders</span><label class="switch"><input type="checkbox" id="nPolicy"><span class="slider"></span></label></div>
+          <div class="toggle-row"><span>Badge Unlocks</span><label class="switch"><input type="checkbox" id="nBadge"><span class="slider"></span></label></div>
+          <div class="actions-row" style="margin-top:14px;"><button class="btn primary" onclick="saveNotifications()">Save Notifications</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="../assets/api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

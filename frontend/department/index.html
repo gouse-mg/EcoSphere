@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoSphere — Department</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><h2>🌿 EcoSphere</h2><span>Department Portal</span></div>
+    <ul class="nav" id="navList">
+      <li><button data-section="overview" class="active">📊 Dashboard</button></li>
+      <li><button data-section="carbon">🌫️ Carbon Transactions</button></li>
+      <li><button data-section="goals">🎯 Environmental Goals</button></li>
+      <li><button data-section="employees">👥 Employees</button></li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="who" id="whoBox">—</div>
+      <button class="logout-btn" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="meta" id="topMeta"></div>
+    </div>
+
+    <div class="section active" id="section-overview">
+      <div class="grid grid-4 mb-10">
+        <div class="card stat-card"><div class="label">Environmental</div><div class="value" id="statEnv">—</div></div>
+        <div class="card stat-card"><div class="label">Social</div><div class="value" id="statSoc">—</div></div>
+        <div class="card stat-card"><div class="label">Governance</div><div class="value" id="statGov">—</div></div>
+        <div class="card stat-card"><div class="label">Total ESG Score</div><div class="value" id="statTotal">—</div><div class="sub" id="statRank">—</div></div>
+      </div>
+      <div class="card">
+        <h3>Employee Social Scores</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Employee</th><th>Email</th><th>Social Score</th></tr></thead>
+          <tbody id="empScoreBody"><tr><td colspan="3" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-carbon">
+      <div class="card">
+        <div class="card-head"><h3>Carbon Transactions</h3>
+          <button class="btn primary" onclick="openNewTransactionModal()">+ New Submission</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Date</th><th>Emission Factor</th><th>Quantity</th><th>Source</th><th>CO2e Calculated</th></tr></thead>
+          <tbody id="carbonTableBody"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-goals">
+      <div class="card">
+        <h3>Environmental Goals</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Metric</th><th>Baseline</th><th>Current</th><th>Target</th><th>Due</th><th>Status</th></tr></thead>
+          <tbody id="goalsTableBody"><tr><td colspan="7" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-employees">
+      <div class="card">
+        <h3>Employees in this Department</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Name</th><th>Email</th><th>XP</th><th>Social Score</th></tr></thead>
+          <tbody id="employeesTableBody"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="../assets/api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

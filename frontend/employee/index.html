@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoSphere — Employee</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="brand"><h2>🌿 EcoSphere</h2><span>Employee Portal</span></div>
+    <ul class="nav" id="navList">
+      <li><button data-section="overview" class="active">📊 Overview</button></li>
+      <li><button data-section="csr">🤝 CSR Activities</button></li>
+      <li><button data-section="challenges">🏆 Challenges</button></li>
+      <li><button data-section="policies">📋 Policies</button></li>
+      <li><button data-section="rewards">🎁 Rewards</button></li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="who" id="whoBox">—</div>
+      <button class="logout-btn" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Overview</h1>
+      <div class="meta" id="topMeta"></div>
+    </div>
+
+    <div class="section active" id="section-overview">
+      <div class="grid grid-3 mb-10">
+        <div class="card stat-card"><div class="label">Total XP</div><div class="value" id="statXp">—</div><div class="sub">Experience points earned</div></div>
+        <div class="card stat-card"><div class="label">Leaderboard Rank</div><div class="value" id="statRank">—</div><div class="sub">Across all employees</div></div>
+        <div class="card stat-card"><div class="label">Badges Earned</div><div class="value" id="statBadgeCount">—</div><div class="sub">Unlocked achievements</div></div>
+      </div>
+      <div class="card">
+        <h3>My Badges</h3>
+        <div class="grid grid-4" id="badgeGrid"><div class="empty">Loading…</div></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-csr">
+      <div class="card">
+        <div class="card-head"><h3>Open CSR Activities</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Description</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody id="csrTableBody"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-challenges">
+      <div class="card">
+        <div class="card-head"><h3>Active Challenges</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>XP</th><th>Difficulty</th><th>Deadline</th><th>Status</th></tr></thead>
+          <tbody id="challengeTableBody"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-policies">
+      <div class="card">
+        <div class="card-head"><h3>ESG Policies</h3></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Title</th><th>Category</th><th>Version</th><th>Effective</th><th>Status</th><th></th></tr></thead>
+          <tbody id="policyTableBody"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-rewards">
+      <div class="card">
+        <div class="card-head"><h3>Rewards Catalog</h3><div class="small-text">Your XP: <strong id="rewardsXp">—</strong></div></div>
+        <div class="grid grid-3" id="rewardsGrid"><div class="empty">Loading…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="../assets/api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

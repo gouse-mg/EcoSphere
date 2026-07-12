@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EcoSphere — Department Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-badge">Department Portal</div>
+    <h1>Department Sign In</h1>
+    <p class="sub">Use your department code and password.</p>
+    <form id="loginForm">
+      <label for="code">Department Code</label>
+      <input type="text" id="code" required autocomplete="username" placeholder="e.g. ENG-01">
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+      <button type="submit">Sign In</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+<script src="../assets/api.js"></script>
+<script>
+if (getToken() && getProfile()?.role === 'department') window.location.href = 'index.html';
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  const code = document.getElementById('code').value.trim();
+  const password = document.getElementById('password').value;
+  try {
+    const data = await api.post('/department/auth/login', { code, password });
+    setToken(data.token);
+    setProfile({ role: 'department', ...data.department });
+    window.location.href = 'index.html';
+  } catch (err) {
+    errEl.textContent = err.message;
+  }
+});
+</script>
+</body>
+</html>
