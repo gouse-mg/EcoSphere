@@ -40,8 +40,7 @@ Open `http://localhost:8080` in your browser. Opening the HTML files directly vi
 ### 1.4 Logging In
 *   **Admin**: No login required. Open `admin/index.html` directly to access the open `/api/admin/*` routes.
 *   **Department**: Log in with a department's `code` and `password`. Create a department from the Admin Console → Departments → **+ New Department**.
-*   **Employee**: Log in with an employee's `email` and `password`. You will need to insert an employee directly into MongoDB (with a bcrypt-hashed password) manually, as there is no public registration endpoint.
-
+*   **Employee**: Log in with an employee's `email` and `password`. Create new employee from the Admin Console → Employee → **+ New Employee**.
 ---
 
 ## 2. Project Overview & Modules
