@@ -176,7 +176,7 @@ Reports & Analytics
 - Deployment: Docker, AWS, Azure
 
 #DATA CONNECTION
-'''text
+```text
 ERP Transactions
 (Purchases, Fleet, Manufacturing, Expenses)
                 │
@@ -193,11 +193,10 @@ Employees ──► CSR Activities ──► Social Score (S)
         └──► Policy Acknowledgements
 
 Audits ──► Compliance Issues ──► Governance Score (G)
-
+                 |
                  ▼
         Department ESG Score
-
+                 |
                  ▼
  Executive Dashboard & ESG Reports
- '''
-
+```
