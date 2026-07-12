@@ -1,202 +1,75 @@
 # EcoSphere: ESG Management Platform
 
-## Overview
-EcoSphere is an ESG (Environmental, Social, and Governance) management platform that integrates sustainability into everyday ERP operations. It automates ESG data collection, carbon accounting, employee engagement, governance compliance, and reporting through a unified dashboard.
-
-## Objectives
-- Measure and reduce environmental impact.
-- Promote employee participation in CSR initiatives.
-- Track governance policies, audits, and compliance.
-- Provide real-time ESG dashboards and reports.
-- Encourage sustainability through gamification.
+This document serves as the comprehensive guide for the EcoSphere platform, covering execution instructions, project architecture, system requirements, and database schemas.
 
 ---
 
-# Modules
+## 1. Quick Start & Execution Guide
 
-## 1. Environmental
-### Features
-- Carbon accounting
-- Emission factor management
-- Sustainability goals
-- Carbon reports
-- Department-wise emission tracking
+The project consists of a Node/Express/MongoDB API backend and a vanilla HTML/CSS/JS frontend with three dashboards: **Admin**, **Department**, and **Employee**.
 
-### Data Sources
-- Purchase orders
-- Manufacturing operations
-- Fleet management
-- Utility bills
-- Business travel
-- Expense claims
+### 1.1 Project Structure
+*   `ecosphere-backend/`: Node/Express/MongoDB API.
+*   `frontend/`: Vanilla HTML/CSS/JS frontend.
+*   `frontend/index.html`: Landing page, links to all 3 portals.
+*   `frontend/admin/`: Admin Console (no login).
+*   `frontend/department/`: Department Portal (JWT login).
+*   `frontend/employee/`: Employee Portal (JWT login).
+*   `frontend/assets/`: Shared style.css + api.js (fetch helper).
 
-### Carbon Calculation
-Carbon Emission = Activity Quantity × Emission Factor
+### 1.2 Running the Backend
+Ensure Docker is running on your machine, then execute the following commands to spin up the database and backend server:
 
-Example:
-- Diesel Used: 40 L
-- Emission Factor: 2.68 kg CO₂/L
-- Carbon Emitted: 107.2 kg CO₂
+1. `cd ecosphere-backend`
+2. `cp .env.example .env` (edit values if needed)
+3. `docker compose up -d` (starts MongoDB)
+4. `npm install`
+5. `npm run dev` (or: `npm start`)
 
-### KPIs
-- Total emissions
-- Emissions by department
-- Monthly trends
-- Goal achievement
+The API will listen on `http://localhost:5000` (from `.env` `PORT`).
 
----
+### 1.3 Running the Frontend
+The frontend is static HTML/CSS/JS and requires no build step. It communicates with the backend at `http://<same-hostname-you-open-the-page-on>:5000/api`.
 
-## 2. Social
-### Features
-- CSR activity management
-- Employee participation
-- Diversity metrics
-- Engagement tracking
+From the `frontend` folder, run a simple local server:
+1. `cd frontend`
+2. `python3 -m http.server 8080`
 
-### Example CSR Activities
-- Tree Plantation
-- Blood Donation
-- Beach Cleanup
-- Food Donation
-- Teaching Programs
+Open `http://localhost:8080` in your browser. Opening the HTML files directly via `file://` also works if the backend is running locally on port 5000.
 
-### KPIs
-- Participation rate
-- Volunteer hours
-- Diversity ratio
-- CSR points earned
+### 1.4 Logging In
+*   **Admin**: No login required. Open `admin/index.html` directly to access the open `/api/admin/*` routes.
+*   **Department**: Log in with a department's `code` and `password`. Create a department from the Admin Console → Departments → **+ New Department**.
+*   **Employee**: Log in with an employee's `email` and `password`. You will need to insert an employee directly into MongoDB (with a bcrypt-hashed password) manually, as there is no public registration endpoint.
 
 ---
 
-## 3. Governance
-### Features
-- ESG policy management
-- Policy acknowledgements
-- Internal audits
-- Compliance issue tracking
+## 2. Project Overview & Modules
 
-### KPIs
-- Policy acceptance rate
-- Audit completion
-- Open vs. resolved issues
+EcoSphere is an ESG (Environmental, Social, and Governance) management platform that integrates sustainability into everyday ERP operations.
 
----
+### Objectives
+*   Measure and reduce environmental impact[cite: 2].
+*   Promote employee participation in CSR initiatives[cite: 2].
+*   Track governance policies, audits, and compliance[cite: 2].
+*   Provide real-time ESG dashboards and reports[cite: 2].
+*   Encourage sustainability through gamification[cite: 2].
 
-## 4. Gamification
-### Features
-- Sustainability challenges
-- XP system
-- Badges
-- Rewards
-- Leaderboards
+### Platform Modules
+*   **Environmental**: Focuses on carbon accounting, emission factor management, sustainability goals, and tracking department-wise emissions (e.g., from utility bills or fleet management)[cite: 2]. 
+    *   *Calculation:* Carbon Emission = Activity Quantity * Emission Factor[cite: 2].
+*   **Social**: Fosters community via CSR activity management, tracking volunteer hours, and monitoring diversity metrics[cite: 2].
+*   **Governance**: Ensures compliance through ESG policy management, policy acknowledgements, and internal audit tracking[cite: 2].
+*   **Gamification**: Incentivizes behavior using sustainability challenges, an XP system, badges, and leaderboards[cite: 2].
 
-### Sample Challenges
-- Cycle to Work
-- No Plastic Week
-- Plant 10 Trees
-- Save Electricity
-
----
-
-# Suggested Database
-
-## Master Data
-- Department
-- Category
-- Emission Factor
-- Product ESG Profile
-- Environmental Goal
-- ESG Policy
-- Badge
-- Reward
-
-## Transactional Data
-- CarbonTransaction
-- CSRActivity
-- EmployeeParticipation
-- Challenge
-- ChallengeParticipation
-- PolicyAcknowledgement
-- Audit
-- ComplianceIssue
-- DepartmentScore
-
----
-
-# Business Workflow
-
+### Business Workflow
 ```text
-Master Configuration
-│
-├── Departments
-├── Categories
-├── Emission Factors
-├── Products
-├── Goals
-├── Policies
-└── Challenges
-        │
+Master Configuration (Departments, Factors, Goals)
         ▼
-Daily ERP Operations
-(Purchase • Manufacturing • Fleet • Expenses)
-        │
+Daily ERP Operations (Purchases, Fleet, Manufacturing)
         ▼
-Carbon Transactions
-        │
-        ├── Environmental Score
-        ├── CSR Participation
-        ├── Challenge Participation
-        ├── Policy Acknowledgements
-        └── Audits
-                │
-                ▼
+Carbon Transactions & Employee Engagement (CSR, Policies, Audits)
+        ▼
 Department ESG Scores
-                │
-                ▼
-Management Dashboard
-                │
-                ▼
-Reports & Analytics
-```
-
-# Future Enhancements
-- AI-based carbon emission prediction
-- IoT integration for smart energy monitoring
-- Supplier ESG scoring
-- Mobile application
-- ERP integrations (SAP, Oracle, Microsoft Dynamics)
-- Advanced analytics and benchmarking
-
-# Tech Stack (Suggested)
-- Frontend: React.js / Next.js
-- Backend: Django / FastAPI / Spring Boot
-- Database: PostgreSQL / MySQL
-- Authentication: JWT / OAuth2
-- Charts: Chart.js / Recharts
-- Deployment: Docker, AWS, Azure
-
-#DATA CONNECTION
-```text
-ERP Transactions
-(Purchases, Fleet, Manufacturing, Expenses)
-                │
-                ▼
-        Carbon Transactions
-                │
-                ▼
-      Environmental Score (E)
-
-Employees ──► CSR Activities ──► Social Score (S)
-        │
-        ├──► Sustainability Challenges ──► XP, Badges, Rewards
-        │
-        └──► Policy Acknowledgements
-
-Audits ──► Compliance Issues ──► Governance Score (G)
-                 |
-                 ▼
-        Department ESG Score
-                 |
-                 ▼
- Executive Dashboard & ESG Reports
-```
+        ▼
+Management Dashboard & Analytics
